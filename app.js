@@ -4,7 +4,8 @@ const email = document.querySelector("#email");
 const password = document.querySelector("#password");
 const confirmPassword = document.querySelector("#confirm-password");
 
-// show input error message
+// Show input error message
+
 function showError(input, message) {
   let parent = input.parentElement;
   let small = parent.querySelector("small");
@@ -12,7 +13,7 @@ function showError(input, message) {
   small.innerText = message;
 }
 
-// show success
+// Show success outline
 function showSuccess(input) {
   let parent = input.parentElement;
   let small = parent.querySelector("small");
@@ -20,23 +21,11 @@ function showSuccess(input) {
   small.innerText = "";
 }
 
-function checkEmptyError(listInput) {
-  let isEmptyError = false;
-  listInput.forEach((input) => {
-    input.value = input.value.trim(); // chuẩn hóa đầu vào
-    if (!input.value) {
-      isEmptyError = true;
-      showError(input, "Vui long nhap lai");
-    } else {
-      showSuccess(input);
-    }
-  });
-}
-
-// Check email
+// Check email is valid
 function checkEmail(input) {
   const regexEmail =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
   if (regexEmail.test(input.value.trim())) {
     showSuccess(input);
   } else {
@@ -44,31 +33,45 @@ function checkEmail(input) {
   }
 }
 
-// Check length
-function checkLength(input, min, max) {
-  input.value = input.value.trim();
-  if (input.value.length < min) {
-    showError(input, `Phai co it nhat ${min} ky tu`);
-    return true;
-  }
-  if (input.value.length > max) {
-    showError(input, `khong duoc qua ${max} ky tu`);
-    return true;
-  }
+// Check emptyError
+function checkEmptyError(listInput) {
+  let isEmptyError = false;
+  listInput.forEach(function (input) {
+    if (input.value.trim() === "") {
+      showError(input, ` Vui lòng nhập lại ${getFieldName(input)}`);
+      isEmptyError = true;
+    } else {
+      showSuccess(input);
+    }
+  });
 
-  showSuccess(input);
-  return false; // khong loi gi return false
+  return isEmptyError;
 }
 
-// check password
+// Check input length
+function checkLength(input, min, max) {
+  if (input.value.length < min) {
+    showError(input, `${getFieldName(input)} phải ít nhất ${min} giá trị`);
+  } else if (input.value.length > max) {
+    showError(input, `${getFieldName(input)} không được quá ${max} ký tự`);
+  } else {
+    showSuccess(input);
+  }
+}
+
+// Check passwords match
 function checkMatchPassword(passwordInput, cfPasswordInput) {
   if (passwordInput.value !== cfPasswordInput.value) {
     showError(cfPasswordInput, "Mat khau khong dung");
-    return true;
   }
-  return false;
 }
 
+// Get fieldname
+function getFieldName(input) {
+  return input.id.charAt(0).toUpperCase() + input.id.slice(1);
+}
+
+// Event listeners
 form.addEventListener("submit", function (e) {
   e.preventDefault(); // Ngăn load trang
   if (!checkEmptyError([username, email, password, confirmPassword])) {
